@@ -7,13 +7,12 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by LaunchCode
  */
+
 public class JobData {
 
     private static final String DATA_FILE = "resources/job_data.csv";
@@ -43,6 +42,9 @@ public class JobData {
             }
         }
 
+        // TODO: BONUS 1 COMPLETED -> Sorting list results
+        Collections.sort(values);
+
         return values;
     }
 
@@ -51,7 +53,10 @@ public class JobData {
         // load data, if not already loaded
         loadData();
 
-        return allJobs;
+        // TODO: Bonus 2 COMPLETED -> Return a copy of allJobs
+        ArrayList allJobsCopy = new ArrayList(allJobs);
+
+        return allJobsCopy;
     }
 
     /**
@@ -62,7 +67,7 @@ public class JobData {
      * with "Enterprise Holdings, Inc".
      *
      * @param column   Column that should be searched.
-     * @param value Value of teh field to search for
+     * @param value Value of the field to search for
      * @return List of all jobs matching the criteria
      */
     public static ArrayList<HashMap<String, String>> findByColumnAndValue(String column, String value) {
@@ -76,8 +81,32 @@ public class JobData {
 
             String aValue = row.get(column);
 
-            if (aValue.contains(value)) {
+            // TODO: COMPLETED -> Make search methods case-insensitive
+            if (aValue.toLowerCase().contains(value.toLowerCase())) {
                 jobs.add(row);
+            }
+        }
+
+        return jobs;
+    }
+
+    // TODO: COMPLETED (1 of 2) -> Created method findByValue
+    public static ArrayList<HashMap<String, String>> findByValue(String searchChoice) {
+        // load data, if not already loaded
+        loadData();
+
+        ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
+        ArrayList<HashMap<String, String>> term = new ArrayList<>();
+
+        for (int i = 0; i < allJobs.size(); i++) {
+            for (Map.Entry<String, String> job : allJobs.get(i).entrySet()) {
+                term.addAll(findByColumnAndValue(job.getKey(), searchChoice));
+            }
+
+            if (!term.isEmpty()) {
+                if (!jobs.containsAll(term)) {
+                    jobs.addAll(term);
+                }
             }
         }
 
@@ -124,5 +153,4 @@ public class JobData {
             e.printStackTrace();
         }
     }
-
 }
